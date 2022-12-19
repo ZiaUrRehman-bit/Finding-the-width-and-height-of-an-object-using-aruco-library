@@ -40,3 +40,27 @@ def findCountoures(frame, cThr = [100, 100], show = True, minArea = 1000, filter
             cv.drawContours(frame, con[4], -1, (255,0,255), 3)
     
     return frame, finalContours
+
+def reorder(myPonits):
+    print(myPonits.shape)
+    myPonitsNew = np.zeros_like(myPonits)
+    myPonits = myPonits.reshape((4,2))
+    add = myPonits.sum(1)
+
+    myPonitsNew[0] = myPonits[np.argmin(add)]
+    myPonitsNew[3] = myPonits[np.argmax(add)] 
+
+    diff = np.diff(myPonits, axis = 1)
+    myPonitsNew[1] = myPonits[np.argmin(diff)]
+    myPonitsNew[2] = myPonits[np.argmax(diff)]
+
+    return myPonitsNew
+def wrapFrame(frame, ponits, w,h):
+
+    pts1 = np.float32(ponits)
+    pts2 = np.float32([[0,0], [w,0],[0,h],[w,h]])
+
+    matrix = cv.getPerspectiveTransform(pts1, pts2)
+    imgWrap = cv.warpPerspective(frame, matrix, (w,h))
+
+    return imgWrap
